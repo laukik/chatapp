@@ -3,21 +3,12 @@ var net = require('net');
 var sockets = [];
 var name = [];
 var t=0;
-var svr = net.createServer(function(sock) {
+net.createServer(function(sock) {
     sys.puts('Connected with : ' + sock.remoteAddress + ':' + sock.remotePort); 
     sock.write('welcome to lokic chat app ' + sock.remoteAddress + ':' + sock.remotePort + '\n');
     sock.write('enter your user name to be used : ');
     t=1;
-    sock.on('data', function(data) {  // client writes message
-        if (data == 'exit\n') {
-            sys.puts('exit command received: ' + sock.remoteAddress + ':' + sock.remotePort + '\n');
-            sock.destroy();
-            var idx = sockets.indexOf(sock);
-            if (idx != -1) {
-                delete sockets[idx];
-            }
-            return;
-        }
+    sock.on('data', function(data) {  
         if(t == 1){
             sock.name = data.slice(0,-1);
             sockets.push(sock);
@@ -25,7 +16,7 @@ var svr = net.createServer(function(sock) {
         }
         else{
         var len = sockets.length;
-        for (var i = 0; i < len; i ++) { // broad cast
+        for (var i = 0; i < len; i ++) {
             if (sockets[i] != sock) {
                 if (sockets[i]) {
                     sockets[i].write(sock.name + ' : ' + data);
@@ -34,17 +25,13 @@ var svr = net.createServer(function(sock) {
         }
         sys.puts(  sock.name + ' : ' +  data);}
     });
-    sock.on('end', function() { // client disconnects
+    sock.on('end', function() { 
         sys.puts('Disconnected: ' + data + data.remoteAddress + ':' + data.remotePort + ' : ' +  sock.name + ' : ' +  '\n');
         var idx = sockets.indexOf(sock);
         if (idx != -1) {
             delete sockets[idx];
         }
     });
-});
+}).listen('127.0.0.1',8080);
  
-var svraddr = '127.0.0.1';
-var svrport = 8080;
- 
-svr.listen(svrport, svraddr);
-sys.puts('Server Created at ' + svraddr + ':' + svrport + '\n');
+sys.puts('Server Created ' +  '\n');
