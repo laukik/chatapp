@@ -25,13 +25,21 @@ net.createServer(function(sock) {
         }
         sys.puts(  sock.name + ' : ' +  data);}
     });
-    sock.on('end', function() { 
-        sys.puts('Disconnected: ' + data + data.remoteAddress + ':' + data.remotePort + ' : ' +  sock.name + ' : ' +  '\n');
+    sock.on('error',function(){});
+    sock.on('close', function() { 
+        sys.puts('Disconnected: ' +   sock.name + '\n');
         var idx = sockets.indexOf(sock);
         if (idx != -1) {
             delete sockets[idx];
         }
     });
-}).listen('127.0.0.1',8080);
+    sock.on('end', function() { 
+        sys.puts('Disconnected: ' +   sock.name + '\n');
+        var idx = sockets.indexOf(sock);
+        if (idx != -1) {
+            delete sockets[idx];
+        }
+    });
+}).listen(8080,'127.0.0.1');
  
 sys.puts('Server Created ' +  '\n');
